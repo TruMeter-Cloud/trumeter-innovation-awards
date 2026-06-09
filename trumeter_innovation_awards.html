@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trumeter Innovation Awards</title>
+  <style>
+    :root {
+      --navy: #0b1f33;
+      --blue: #0f6fb5;
+      --cyan: #12a8d8;
+      --green: #32a852;
+      --orange: #f59e0b;
+      --light: #f4f8fb;
+      --white: #ffffff;
+      --text: #25313b;
+      --muted: #667085;
+      --border: #d9e3ea;
+      --shadow: 0 18px 45px rgba(11, 31, 51, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, #eef7fb 0%, #ffffff 45%, #f5f8fa 100%);
+      line-height: 1.6;
+    }
+
+    header {
+      background: radial-gradient(circle at top right, rgba(18,168,216,0.35), transparent 35%), linear-gradient(135deg, var(--navy), #123f63);
+      color: var(--white);
+      padding: 70px 8% 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      bottom: -120px;
+      width: 320px;
+      height: 320px;
+      border: 40px solid rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(36px, 6vw, 70px);
+      line-height: 1.05;
+      max-width: 900px;
+    }
+
+    .subtitle {
+      max-width: 780px;
+      font-size: 20px;
+      margin: 22px 0 0;
+      color: #d9eef8;
+    }
+
+    nav {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 8%;
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      box-shadow: 0 6px 18px rgba(11,31,51,0.06);
+    }
+
+    nav a {
+      color: var(--navy);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    nav a.admin-link {
+      margin-left: auto;
+      background: var(--navy);
+      color: var(--white);
+      padding: 8px 14px;
+      border-radius: 12px;
+    }
+
+    main {
+      padding: 42px 8% 80px;
+      max-width: 1300px;
+      margin: auto;
+    }
+
+    section {
+      margin-bottom: 46px;
+    }
+
+    .section-title {
+      font-size: 32px;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+
+    .section-intro {
+      color: var(--muted);
+      max-width: 850px;
+      margin-bottom: 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 28px rgba(11,31,51,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: var(--navy);
+    }
+
+    .icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 24px;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      counter-reset: step;
+    }
+
+    .step {
+      position: relative;
+      background: var(--white);
+      border-left: 6px solid var(--cyan);
+      padding: 22px;
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(11,31,51,0.08);
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      width: 34px;
+      height: 34px;
+      background: var(--navy);
+      color: white;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill {
+      background: #e8f5fb;
+      color: var(--navy);
+      border: 1px solid #bde3f2;
+      padding: 9px 13px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .tooltip {
+      border-bottom: 2px dotted var(--cyan);
+      cursor: help;
+      position: relative;
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    .tooltip::after {
+      content: attr(data-tip);
+      position: absolute;
+      left: 50%;
+      bottom: 130%;
+      transform: translateX(-50%);
+      background: var(--navy);
+      color: white;
+      padding: 10px 12px;
+      width: 250px;
+      border-radius: 10px;
+      opacity: 0;
+      pointer-events: none;
+      font-weight: normal;
+      font-size: 13px;
+      line-height: 1.4;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      z-index: 5;
+    }
+
+    .tooltip:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    .highlight {
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      color: white;
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .highlight h2 { margin-top: 0; }
+
+    .form-wrap {
+      background: var(--white);
+      border-radius: 26px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    form {
+      display: grid;
+      gap: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    label {
+      font-weight: 700;
+      color: var(--navy);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      background: #fbfdff;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 3px solid rgba(18,168,216,0.2);
+      border-color: var(--cyan);
+      background: white;
+    }
+
+    textarea { min-height: 120px; resize: vertical; }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+    }
+
+    .checkbox-group label {
+      font-weight: 500;
+      background: #f6fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .checkbox-group input { width: auto; }
+
+    button {
+      border: 0;
+      background: linear-gradient(135deg, var(--green), #5ec878);
+      color: white;
+      padding: 15px 24px;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      width: fit-content;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(50,168,82,0.28);
+    }
+
+    button[disabled] {
+      opacity: 0.65;
+      cursor: wait;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .loader-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(11, 31, 51, 0.24);
+      z-index: 100;
+    }
+
+    .loader-overlay.active {
+      display: grid;
+    }
+
+    .loader-box {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 22px;
+      box-shadow: var(--shadow);
+      color: var(--navy);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid #d9e3ea;
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .note {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .success {
+      display: none;
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: #e9f9ee;
+      border: 1px solid #b7ebc6;
+      color: #166534;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    .admin-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .admin-toolbar {
+      display: flex;
+      gap: 14px;
+      justify-content: space-between;
+      align-items: end;
+      padding: 22px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fbfd;
+      flex-wrap: wrap;
+    }
+
+    .admin-toolbar .form-grid {
+      flex: 1 1 540px;
+    }
+
+    .admin-button {
+      min-height: 46px;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      white-space: nowrap;
+    }
+
+    .admin-button.secondary {
+      background: var(--navy);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin: 0 0 22px;
+    }
+
+    .stat {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 8px 22px rgba(11,31,51,0.07);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--navy);
+      font-size: 32px;
+      line-height: 1.1;
+      margin-top: 6px;
+    }
+
+    .admin-content {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(300px, 0.8fr);
+      gap: 0;
+    }
+
+    .admin-list {
+      min-width: 0;
+      border-right: 1px solid var(--border);
+    }
+
+    .admin-table-wrap {
+      overflow-x: auto;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    .admin-table th,
+    .admin-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    .admin-table th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      background: #fbfdff;
+    }
+
+    .admin-table button {
+      background: transparent;
+      color: var(--blue);
+      padding: 0;
+      border-radius: 0;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: left;
+      width: auto;
+    }
+
+    .admin-table button:hover {
+      box-shadow: none;
+      transform: none;
+      text-decoration: underline;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .status.submitted { background: #eef7fb; color: var(--blue); border-color: #bde3f2; }
+    .status.review,
+    .status.under_review { background: #fff7ed; color: #b45309; border-color: #fed7aa; }
+    .status.shortlisted { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+    .status.winner { background: #fffbea; color: #92400e; border-color: #fde68a; }
+
+    .score {
+      color: var(--navy);
+      font-weight: 900;
+    }
+
+    .admin-detail {
+      padding: 22px;
+      background: #fbfdff;
+    }
+
+    .detail-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      position: sticky;
+      top: 78px;
+    }
+
+    .detail-card h3 {
+      color: var(--navy);
+      margin: 0 0 8px;
+      line-height: 1.25;
+    }
+
+    .meta-list {
+      display: grid;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 9px;
+      font-size: 14px;
+    }
+
+    .meta-row span {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .score-grid {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .score-bar {
+      height: 8px;
+      background: #e6edf2;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .score-bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(135deg, var(--blue), var(--green));
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .admin-actions button {
+      flex: 1 1 120px;
+      width: auto;
+    }
+
+    footer {
+      background: var(--navy);
+      color: #c8d7e3;
+      padding: 28px 8%;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    @media print {
+      nav, button { display: none; }
+      body { background: white; }
+      .card, .form-wrap, .highlight { box-shadow: none; }
+    }
+
+    @media (max-width: 900px) {
+      .admin-content {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-list {
+        border-right: 0;
+      }
+
+      .detail-card {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="badge">Innovate @ Trumeter</div>
+    <h1>Trumeter Innovation Awards</h1>
+    <p class="subtitle">A simple, company-wide framework for employees to share ideas, solve real problems, and win small prizes while helping shape the future of Trumeter.</p>
+  </header>
+
+  <nav>
+    <a href="#purpose">Purpose</a>
+    <a href="#how">How It Works</a>
+    <a href="#themes">Themes</a>
+    <a href="#awards">Awards</a>
+    <a href="#judging">Judging</a>
+    <a href="#submit">Submit Idea</a>
+    <a class="admin-link" href="admin.html">Admin</a>
+  </nav>
+
+  <main>
+    <section id="purpose">
+      <h2 class="section-title">Purpose</h2>
+      <p class="section-intro">The Innovation Awards encourage everyone at Trumeter to contribute ideas that improve our products, processes, customer experience, manufacturing, sustainability, and ways of working.</p>
+      <div class="grid">
+        <div class="card"><div class="icon">💡</div><h3>Open to Everyone</h3><p>Innovation is not limited to Engineering. Great ideas can come from any team, any site, and any role.</p></div>
+        <div class="card"><div class="icon">⚙️</div><h3>Practical Improvements</h3><p>Small changes can make a big difference. We welcome simple ideas as well as bold concepts.</p></div>
+        <div class="card"><div class="icon">🚀</div><h3>Future-Focused</h3><p>The programme helps Trumeter explore new technologies, smarter products, and better ways to serve customers.</p></div>
+      </div>
+    </section>
+
+    <section id="how">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-intro">Every 1–2 months, a new innovation subject is announced. Employees submit ideas, a judging panel reviews them, and winners receive recognition and small prizes.</p>
+      <div class="timeline">
+        <div class="step"><h3>Theme Announced</h3><p>A new subject is shared, such as AI, sustainability, customer experience, or manufacturing efficiency.</p></div>
+        <div class="step"><h3>Ideas Submitted</h3><p>Employees use the form below to explain the problem, solution, and expected benefit.</p></div>
+        <div class="step"><h3>Ideas Reviewed</h3><p>The Innovation Review Board scores submissions using clear criteria.</p></div>
+        <div class="step"><h3>Winners Celebrated</h3><p>Winning ideas are announced in a company update and receive small prizes.</p></div>
+        <div class="step"><h3>Best Ideas Progress</h3><p>High-value ideas may be developed further with support from the relevant department.</p></div>
+      </div>
+    </section>
+
+    <section id="themes">
+      <h2 class="section-title">Example Challenge Themes</h2>
+      <p class="section-intro">Each challenge should focus attention on one clear subject, making it easier for employees to contribute relevant ideas.</p>
+      <div class="pill-list">
+        <span class="pill">Smarter Products</span>
+        <span class="pill">AI & Automation</span>
+        <span class="pill">Customer Experience</span>
+        <span class="pill">Manufacturing Efficiency</span>
+        <span class="pill">Quality Improvement</span>
+        <span class="pill">Sustainability</span>
+        <span class="pill">Cost Reduction</span>
+        <span class="pill">Employee Experience</span>
+        <span class="pill">Digital Tools</span>
+        <span class="pill">Future Technologies</span>
+      </div>
+    </section>
+
+    <section id="awards">
+      <h2 class="section-title">Awards & Prizes</h2>
+      <div class="grid">
+        <div class="card"><h3>🥇 Gold Award</h3><p>Most impactful idea.</p><strong>Suggested prize:</strong> £30 voucher + company recognition.</div>
+        <div class="card"><h3>🥈 Silver Award</h3><p>Strong idea with clear business value.</p><strong>Suggested prize:</strong> £20 voucher.</div>
+        <div class="card"><h3>🥉 Bronze Award</h3><p>Creative and practical solution.</p><strong>Suggested prize:</strong> £10 voucher.</div>
+        <div class="card"><h3>👥 People's Choice</h3><p>Employees vote for their favourite idea.</p><strong>Suggested prize:</strong> Company recognition.</div>
+        <div class="card"><h3>🌙 Bold Thinking Award</h3><p>Recognises ambitious, future-focused, or disruptive ideas.</p><strong>Suggested prize:</strong> Company recognition.</div>
+      </div>
+    </section>
+
+    <section id="judging">
+      <h2 class="section-title">Judging Criteria</h2>
+      <p class="section-intro">Ideas are judged fairly using a simple scoring framework. Hover over highlighted words for guidance.</p>
+      <div class="grid">
+        <div class="card"><h3>Innovation — 30%</h3><p>Is the idea creative, different, or a smart improvement to how we currently work?</p></div>
+        <div class="card"><h3>Business Impact — 25%</h3><p>Does the idea create measurable value, such as cost saving, revenue growth, efficiency, or quality improvement?</p></div>
+        <div class="card"><h3>Practicality — 20%</h3><p>Can the idea realistically be implemented with available time, budget, and resources?</p></div>
+        <div class="card"><h3>Customer Benefit — 15%</h3><p>Will the idea improve the experience, reliability, support, or value delivered to customers?</p></div>
+        <div class="card"><h3>Strategic Alignment — 10%</h3><p>Does the idea support Trumeter’s technology, product, manufacturing, or commercial direction?</p></div>
+      </div>
+    </section>
+
+    <section class="highlight">
+      <h2>What Makes a Good Submission?</h2>
+      <p>A strong idea clearly explains the <span class="tooltip" data-tip="The issue, inefficiency, customer pain point, or opportunity your idea addresses.">problem</span>, the <span class="tooltip" data-tip="The change, tool, product improvement, process update, or experiment you are proposing.">solution</span>, and the <span class="tooltip" data-tip="The value created, such as time saved, lower cost, improved quality, better customer experience, or new revenue.">benefit</span>. It does not need to be perfect. A practical idea that can be tested quickly is often better than a complex idea that never starts.</p>
+    </section>
+
+    <section id="submit">
+      <h2 class="section-title">Submit Your Innovation Idea</h2>
+      <p class="section-intro">Use this form to capture ideas for the current challenge. This demo form creates a downloadable summary on the page; it can later be connected to Microsoft Forms, SharePoint, Teams, or an internal database.</p>
+
+      <div class="form-wrap">
+        <form id="ideaForm">
+          <div class="form-grid">
+            <div>
+              <label for="name">Employee Name</label>
+              <input id="name" name="name" type="text" placeholder="Your name" required />
+            </div>
+            <div>
+              <label for="department">Department</label>
+              <select id="department" name="department" required>
+                <option value="">Select department</option>
+                <option>IoT</option>
+                <option>Mechanical</option>
+                <option>Electronics</option>
+                <option>Customer Support</option>
+                <option>Manufacturing</option>
+                <option>HR</option>
+                <option>Marketing</option>
+                <option>Sales</option>
+                <option>IT</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="name@trumeter.com" required />
+            </div>
+            <div>
+              <label for="theme">Challenge Theme</label>
+              <select id="theme" name="theme" required>
+                <option value="">Select theme</option>
+                <option>Smarter Products</option>
+                <option>AI & Automation</option>
+                <option>Customer Experience</option>
+                <option>Manufacturing Efficiency</option>
+                <option>Quality Improvement</option>
+                <option>Sustainability</option>
+                <option>Cost Reduction</option>
+                <option>Employee Experience</option>
+                <option>Future Technologies</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="title">Idea Title</label>
+            <input id="title" name="title" type="text" placeholder="Give your idea a short, clear title" required />
+          </div>
+
+          <div>
+            <label for="problem">What problem or opportunity does this address?</label>
+            <textarea id="problem" name="problem" placeholder="Describe the issue, gap, inefficiency, customer need, or opportunity." required></textarea>
+          </div>
+
+          <div>
+            <label for="idea">What is your idea?</label>
+            <textarea id="idea" name="idea" placeholder="Explain your proposed solution. Keep it simple and practical." required></textarea>
+          </div>
+
+          <div>
+            <label>Expected Benefit</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="benefit" value="Cost saving" /> Cost saving</label>
+              <label><input type="checkbox" name="benefit" value="Time saving" /> Time saving</label>
+              <label><input type="checkbox" name="benefit" value="Revenue growth" /> Revenue growth</label>
+              <label><input type="checkbox" name="benefit" value="Quality improvement" /> Quality improvement</label>
+              <label><input type="checkbox" name="benefit" value="Customer satisfaction" /> Customer satisfaction</label>
+              <label><input type="checkbox" name="benefit" value="Sustainability" /> Sustainability</label>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label for="effort">Estimated Effort</label>
+              <select id="effort" name="effort" required>
+                <option value="">Select effort</option>
+                <option>Small - quick improvement</option>
+                <option>Medium - needs team support</option>
+                <option>Large - strategic project</option>
+              </select>
+            </div>
+            <div>
+              <label for="impact">Expected Impact</label>
+              <select id="impact" name="impact" required>
+                <option value="">Select impact</option>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+                <option>Transformational</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="notes">Additional Notes</label>
+            <textarea id="notes" name="notes" placeholder="Optional: include links, sketches, examples, risks, estimated savings, or people who could help."></textarea>
+          </div>
+
+          <button type="submit">Submit Idea</button>
+          <p class="note">Note: Work in progress. If it looks confusing, you're seeing the creative process in its natural habitat. </p>
+          <div id="success" class="success"></div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Trumeter Innovation Awards · Innovate, improve, and shape the future together.
+  </footer>
+
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="loader-box"><span class="spinner"></span><span id="loaderText">Working...</span></div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://127.0.0.1:7071/api';
+    let busyCount = 0;
+
+    function setLoading(isLoading, message = 'Working...') {
+      busyCount += isLoading ? 1 : -1;
+      busyCount = Math.max(0, busyCount);
+      document.getElementById('loaderText').textContent = message;
+      document.getElementById('loaderOverlay').classList.toggle('active', busyCount > 0);
+      document.querySelectorAll('button').forEach(button => {
+        button.disabled = busyCount > 0;
+      });
+    }
+
+    async function withLoader(message, task) {
+      setLoading(true, message);
+      try {
+        return await task();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function apiJson(path, options = {}) {
+      const headers = {
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+        ...(options.headers || {})
+      };
+
+      const response = await fetch(`${API_BASE}${path}`, {
+        headers,
+        ...options
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `Request failed with ${response.status}`);
+      }
+
+      return response.json();
+    }
+
+    document.getElementById('ideaForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const form = event.target;
+      const data = new FormData(form);
+      const benefits = data.getAll('benefit');
+      const success = document.getElementById('success');
+
+      const payload = {
+        employeeName: data.get('name'),
+        email: data.get('email'),
+        department: data.get('department'),
+        theme: data.get('theme'),
+        title: data.get('title'),
+        problem: data.get('problem'),
+        idea: data.get('idea'),
+        benefits,
+        effort: data.get('effort'),
+        impact: data.get('impact'),
+        notes: data.get('notes')
+      };
+
+      await withLoader('Submitting idea...', async () => {
+        try {
+          const result = await apiJson('/CreateIdea', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+
+          success.textContent = `Thank you, ${payload.employeeName}! Your idea "${result.idea.title}" has been submitted as ${result.idea.id}.`;
+          success.style.display = 'block';
+          form.reset();
+        } catch (error) {
+          success.textContent = `Submission could not be saved to the backend. ${error.message}`;
+          success.style.display = 'block';
+        }
+      });
+
+      success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  </script>
+</body>
+</html>

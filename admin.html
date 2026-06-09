@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Trumeter Innovation Awards</title>
+  <style>
+    :root {
+      --navy: #0b1f33;
+      --blue: #0f6fb5;
+      --cyan: #12a8d8;
+      --white: #ffffff;
+      --text: #25313b;
+      --muted: #667085;
+      --border: #d9e3ea;
+      --panel: #f8fbfd;
+      --shadow: 0 14px 34px rgba(11, 31, 51, 0.10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: #f2f7fa;
+      line-height: 1.5;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--navy), #123f63);
+      color: var(--white);
+      padding: 24px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 40px);
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin: 7px 0 0;
+      color: #d9eef8;
+    }
+
+    main {
+      max-width: 1420px;
+      margin: auto;
+      padding: 28px 7% 64px;
+    }
+
+    a,
+    button {
+      border: 0;
+      text-decoration: none;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      color: white;
+      padding: 11px 15px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+    }
+
+    button[disabled] {
+      opacity: 0.65;
+      cursor: wait;
+    }
+
+    .loader-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(11, 31, 51, 0.22);
+      z-index: 100;
+    }
+
+    .loader-overlay.active {
+      display: grid;
+    }
+
+    .loader-box {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 22px;
+      box-shadow: var(--shadow);
+      color: var(--navy);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid #d9e3ea;
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .secondary {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    .top-actions,
+    .toolbar,
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .page-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .note {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .connection-pill {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      box-shadow: 0 5px 14px rgba(11,31,51,0.04);
+    }
+
+    .tabs {
+      background: #e8f1f6;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 5px;
+    }
+
+    .tab-button {
+      background: transparent;
+      color: var(--navy);
+      min-height: 36px;
+      padding: 8px 13px;
+    }
+
+    .tab-button.active {
+      background: var(--white);
+      color: var(--blue);
+      box-shadow: 0 5px 14px rgba(11,31,51,0.08);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .stat {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 5px 16px rgba(11,31,51,0.05);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--navy);
+      font-size: 30px;
+      line-height: 1.1;
+      margin-top: 6px;
+    }
+
+    .table-shell {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: visible;
+    }
+
+    .toolbar {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 16px;
+      justify-content: space-between;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--panel);
+      flex-wrap: wrap;
+    }
+
+    .pagination-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pagination .secondary {
+      background: var(--white);
+      border: 1px solid var(--border);
+      color: var(--navy);
+      box-shadow: 0 4px 10px rgba(11,31,51,0.05);
+    }
+
+    .pagination .secondary:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .pagination button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(160px, 230px) minmax(160px, 230px);
+      gap: 12px;
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 13px;
+      font: inherit;
+      background: #fbfdff;
+    }
+
+    .table-wrap {
+      overflow: visible;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      padding: 15px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      color: var(--muted);
+      background: #fbfdff;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    tbody tr:hover {
+      background: #eef7fb;
+    }
+
+    .idea-title {
+      color: var(--blue);
+      font-weight: 900;
+    }
+
+    .idea-id {
+      color: var(--muted);
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    tbody td:first-child {
+      position: relative;
+    }
+
+    .status {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .status.submitted { background: #eef7fb; color: var(--blue); border-color: #bde3f2; }
+    .status.under_review { background: #fff7ed; color: #b45309; border-color: #fed7aa; }
+    .status.shortlisted { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+    .status.winner { background: #fffbea; color: #92400e; border-color: #fde68a; }
+    .status.rejected { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+    .status.implemented { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+    .status.archived { background: #f2f4f7; color: #475467; border-color: #d0d5dd; }
+
+    .score {
+      color: var(--navy);
+      font-weight: 900;
+    }
+
+    .hover-card {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: min(340px, 72vw);
+      opacity: 0;
+      pointer-events: none;
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid #cfe4ef;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 0;
+      box-shadow: 0 8px 18px rgba(11,31,51,0.08);
+      transform: translate(14px, 14px);
+      transition: opacity 0.12s ease, transform 0.12s ease;
+      z-index: 10;
+    }
+
+    tbody tr:hover .hover-card {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
+    .hover-card strong {
+      display: block;
+      margin-bottom: 7px;
+    }
+
+    .hover-card p {
+      margin: 0 0 9px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hover-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .hover-stats span {
+      background: #f4f9fc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 760px) {
+      .filters {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Admin Review Dashboard</h1>
+      <p class="subtitle">Browse submissions, hover for a quick preview, click to review and score.</p>
+    </div>
+    <div class="top-actions">
+      <a class="secondary" href="trumeter_innovation_awards.html">Back to Site</a>
+      <button type="button" id="refreshIdeas">Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-row">
+      <div class="tabs" aria-label="Admin views">
+        <button class="tab-button active" type="button" data-view="active">Active Ideas</button>
+        <button class="tab-button" type="button" data-view="archived">History</button>
+      </div>
+      <p class="connection-pill" id="adminConnection">Connecting to backend...</p>
+    </div>
+
+    <div class="stats-grid" id="adminStats"></div>
+
+    <section class="table-shell">
+      <div class="toolbar">
+        <div class="filters">
+          <div>
+            <label for="adminSearch">Search ideas</label>
+            <input id="adminSearch" type="search" placeholder="Search by title, department, or submitter" />
+          </div>
+          <div>
+            <label for="adminDepartment">Department</label>
+            <select id="adminDepartment">
+              <option value="all">All departments</option>
+            </select>
+          </div>
+          <div>
+            <label for="adminStatus">Status</label>
+            <select id="adminStatus">
+              <option value="all">All statuses</option>
+              <option value="submitted">Submitted</option>
+              <option value="under_review">Under Review</option>
+              <option value="shortlisted">Shortlisted</option>
+              <option value="winner">Winner</option>
+              <option value="rejected">Rejected</option>
+              <option value="implemented">Implemented</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" id="exportIdeas">Export CSV</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 26%;">Idea</th>
+              <th style="width: 12%;">Department</th>
+              <th style="width: 16%;">Theme</th>
+              <th style="width: 12%;">Status</th>
+              <th style="width: 9%;">Archived</th>
+              <th style="width: 7%;">Score</th>
+              <th style="width: 10%;">Owner</th>
+              <th style="width: 8%;">Submitted</th>
+            </tr>
+          </thead>
+          <tbody id="ideaRows"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span class="note" id="paginationSummary">Showing 0 ideas</span>
+        <div class="pagination-controls">
+          <button class="secondary" type="button" id="prevPage">Previous</button>
+          <span class="note" id="pageIndicator">Page 1 of 1</span>
+          <button class="secondary" type="button" id="nextPage">Next</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="loader-box"><span class="spinner"></span><span id="loaderText">Working...</span></div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://127.0.0.1:7071/api';
+    const statusLabels = {
+      submitted: 'Submitted',
+      under_review: 'Under Review',
+      shortlisted: 'Shortlisted',
+      winner: 'Winner',
+      rejected: 'Rejected',
+      implemented: 'Implemented'
+    };
+
+    let allIdeas = [];
+    let currentView = 'active';
+    let currentPage = 1;
+    let busyCount = 0;
+    const pageSize = 10;
+
+    function setLoading(isLoading, message = 'Working...') {
+      busyCount += isLoading ? 1 : -1;
+      busyCount = Math.max(0, busyCount);
+      document.getElementById('loaderText').textContent = message;
+      document.getElementById('loaderOverlay').classList.toggle('active', busyCount > 0);
+      document.querySelectorAll('button').forEach(button => {
+        button.disabled = busyCount > 0;
+      });
+    }
+
+    async function withLoader(message, task) {
+      setLoading(true, message);
+      try {
+        return await task();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      }[character]));
+    }
+
+    function displayDate(value) {
+      return value ? String(value).slice(0, 10) : 'Not recorded';
+    }
+
+    function isIdeaArchived(idea) {
+      return Boolean(idea.isArchived || idea.archived || idea.status === 'archived');
+    }
+
+    async function apiJson(path) {
+      const response = await fetch(`${API_BASE}${path}`);
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `Request failed with ${response.status}`);
+      }
+      return response.json();
+    }
+
+    function renderStats(ideas) {
+      const scores = ideas.map(idea => idea.score).filter(score => typeof score === 'number');
+      const averageScore = scores.length ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length) : '-';
+      const stats = [
+        ['Total Ideas', ideas.length],
+        ['Under Review', ideas.filter(idea => idea.status === 'under_review').length],
+        ['Shortlisted', ideas.filter(idea => idea.status === 'shortlisted').length],
+        ['Avg Score', averageScore]
+      ];
+
+      document.getElementById('adminStats').innerHTML = stats.map(([label, value]) => `
+        <div class="stat"><span>${label}</span><strong>${value}</strong></div>
+      `).join('');
+    }
+
+    function renderDepartmentFilter() {
+      const selected = document.getElementById('adminDepartment').value;
+      const departments = [...new Set(allIdeas.map(idea => idea.department).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+      document.getElementById('adminDepartment').innerHTML = [
+        '<option value="all">All departments</option>',
+        ...departments.map(department => `<option value="${escapeHtml(department)}">${escapeHtml(department)}</option>`)
+      ].join('');
+      document.getElementById('adminDepartment').value = departments.includes(selected) ? selected : 'all';
+    }
+
+    function filteredIdeas() {
+      const query = document.getElementById('adminSearch').value.trim().toLowerCase();
+      const department = document.getElementById('adminDepartment').value;
+      const status = document.getElementById('adminStatus').value;
+      return allIdeas.filter(idea => {
+        const haystack = `${idea.id} ${idea.title} ${idea.department} ${idea.employeeName} ${idea.email} ${idea.theme}`.toLowerCase();
+        const matchesView = currentView === 'archived' ? isIdeaArchived(idea) : !isIdeaArchived(idea);
+        const matchesDepartment = department === 'all' || idea.department === department;
+        return matchesView && matchesDepartment && (!query || haystack.includes(query)) && (status === 'all' || idea.status === status);
+      });
+    }
+
+    function renderRows() {
+      const ideas = filteredIdeas();
+      const pageCount = Math.max(1, Math.ceil(ideas.length / pageSize));
+
+      if (currentPage > pageCount) {
+        currentPage = pageCount;
+      }
+
+      const start = (currentPage - 1) * pageSize;
+      const pageIdeas = ideas.slice(start, start + pageSize);
+
+      document.getElementById('ideaRows').innerHTML = pageIdeas.map(idea => `
+        <tr data-idea-id="${escapeHtml(idea.id)}">
+          <td>
+            <span class="idea-title">${escapeHtml(idea.title)}</span>
+            <span class="idea-id">${escapeHtml(idea.id)}</span>
+            <div class="hover-card">
+              <strong>${escapeHtml(idea.title)}</strong>
+              <p>${escapeHtml(idea.problem || 'No problem statement recorded.')}</p>
+              <div class="hover-stats">
+                <span>Score<br><strong>${idea.score ?? '-'}</strong></span>
+                <span>Impact<br><strong>${escapeHtml(idea.impact)}</strong></span>
+                <span>Effort<br><strong>${escapeHtml(idea.effort)}</strong></span>
+              </div>
+            </div>
+          </td>
+          <td>${escapeHtml(idea.department)}</td>
+          <td>${escapeHtml(idea.theme)}</td>
+          <td><span class="status ${escapeHtml(idea.status)}">${escapeHtml(statusLabels[idea.status] || idea.status)}</span></td>
+          <td>${isIdeaArchived(idea) ? '<span class="status archived">Yes</span>' : 'No'}</td>
+          <td class="score">${idea.score ?? '-'}</td>
+          <td>${escapeHtml(idea.employeeName)}</td>
+          <td>${escapeHtml(displayDate(idea.submittedAt))}</td>
+        </tr>
+      `).join('') || '<tr><td colspan="8">No matching ideas found.</td></tr>';
+
+      const end = ideas.length ? Math.min(start + pageSize, ideas.length) : 0;
+      document.getElementById('paginationSummary').textContent = ideas.length
+        ? `Showing ${start + 1}-${end} of ${ideas.length} ideas`
+        : 'Showing 0 ideas';
+      document.getElementById('pageIndicator').textContent = `Page ${currentPage} of ${pageCount}`;
+      document.getElementById('prevPage').disabled = currentPage <= 1;
+      document.getElementById('nextPage').disabled = currentPage >= pageCount;
+
+      document.querySelectorAll('[data-idea-id]').forEach(row => {
+        const hoverCard = row.querySelector('.hover-card');
+        row.addEventListener('mousemove', event => {
+          if (!hoverCard) return;
+
+          const gap = 14;
+          const width = hoverCard.offsetWidth || 340;
+          const height = hoverCard.offsetHeight || 150;
+          const left = Math.min(event.clientX + gap, window.innerWidth - width - gap);
+          const top = Math.min(event.clientY + gap, window.innerHeight - height - gap);
+
+          hoverCard.style.left = `${Math.max(gap, left)}px`;
+          hoverCard.style.top = `${Math.max(gap, top)}px`;
+        });
+        row.addEventListener('click', () => {
+          window.location.href = `review.html?id=${encodeURIComponent(row.dataset.ideaId)}`;
+        });
+      });
+    }
+
+    async function loadIdeas() {
+      await withLoader('Loading ideas...', async () => {
+        const connection = document.getElementById('adminConnection');
+        connection.textContent = 'Loading ideas from backend...';
+        try {
+          const data = await apiJson('/ListIdeas');
+          allIdeas = data.ideas || [];
+          renderDepartmentFilter();
+          connection.textContent = `Connected to backend. Showing ${filteredIdeas().length} idea${filteredIdeas().length === 1 ? '' : 's'}.`;
+        } catch (error) {
+          allIdeas = [];
+          renderDepartmentFilter();
+          connection.textContent = `Backend unavailable. ${error.message}`;
+        }
+        renderStats(filteredIdeas());
+        renderRows();
+      });
+    }
+
+    function setView(view) {
+      currentView = view;
+      currentPage = 1;
+      document.querySelectorAll('[data-view]').forEach(button => {
+        button.classList.toggle('active', button.dataset.view === view);
+      });
+      document.getElementById('adminStatus').value = 'all';
+      document.getElementById('adminDepartment').value = 'all';
+      renderStats(filteredIdeas());
+      renderRows();
+    }
+
+    document.getElementById('adminSearch').addEventListener('input', () => {
+      currentPage = 1;
+      renderStats(filteredIdeas());
+      renderRows();
+    });
+    document.getElementById('adminStatus').addEventListener('change', () => {
+      currentPage = 1;
+      renderStats(filteredIdeas());
+      renderRows();
+    });
+    document.getElementById('adminDepartment').addEventListener('change', () => {
+      currentPage = 1;
+      renderStats(filteredIdeas());
+      renderRows();
+    });
+    document.getElementById('exportIdeas').addEventListener('click', () => {
+      setLoading(true, 'Preparing CSV export...');
+      window.location.href = `${API_BASE}/ExportIdeasCsv`;
+      setTimeout(() => setLoading(false), 1200);
+    });
+    document.getElementById('refreshIdeas').addEventListener('click', loadIdeas);
+    document.getElementById('prevPage').addEventListener('click', () => {
+      currentPage = Math.max(1, currentPage - 1);
+      renderRows();
+    });
+    document.getElementById('nextPage').addEventListener('click', () => {
+      currentPage += 1;
+      renderRows();
+    });
+    document.querySelectorAll('[data-view]').forEach(button => {
+      button.addEventListener('click', () => setView(button.dataset.view));
+    });
+
+    loadIdeas();
+  </script>
+</body>
+</html>

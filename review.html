@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Review Idea - Trumeter Innovation Awards</title>
+  <style>
+    :root {
+      --ink: #0b1f33;
+      --blue: #0f6fb5;
+      --line: #d7e2ea;
+      --soft-line: #e8eef3;
+      --paper: #ffffff;
+      --wash: #f4f8fb;
+      --muted: #667085;
+      --text: #26333f;
+      --success-bg: #ecfdf3;
+      --success: #067647;
+      --warn-bg: #fff7ed;
+      --warn: #b45309;
+      --danger: #b42318;
+      --shadow: 0 18px 45px rgba(11, 31, 51, 0.10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--wash);
+      line-height: 1.5;
+    }
+
+    header {
+      background: var(--ink);
+      color: #fff;
+      padding: 18px 7%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: #cfe2ef;
+      font-size: 14px;
+    }
+
+    main {
+      max-width: 1680px;
+      margin: 0 auto;
+      padding: 18px 4% 42px;
+    }
+
+    a,
+    button {
+      border: 0;
+      text-decoration: none;
+      background: var(--blue);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+    }
+
+    a.secondary,
+    button.secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.28);
+      color: #fff;
+    }
+
+    button.quiet {
+      background: #f7fafc;
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    button.danger {
+      background: var(--danger);
+    }
+
+    button[disabled] {
+      opacity: 0.65;
+      cursor: wait;
+    }
+
+    .loader-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(11, 31, 51, 0.28);
+      z-index: 100;
+    }
+
+    .loader-overlay.active {
+      display: grid;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(11, 31, 51, 0.42);
+      z-index: 90;
+    }
+
+    .modal-overlay.active {
+      display: grid;
+    }
+
+    .modal {
+      width: min(460px, 100%);
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .modal h2 {
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-size: 22px;
+    }
+
+    .modal p {
+      margin: 0 0 16px;
+      color: var(--muted);
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .loader-box {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 22px;
+      box-shadow: var(--shadow);
+      color: var(--ink);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid #d7e2ea;
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .connection {
+      display: inline-flex;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 11px;
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .submission,
+    .review-panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      min-height: 640px;
+    }
+
+    .submission {
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .submission-head {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--soft-line);
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .submission h2 {
+      margin: 10px 0 8px;
+      color: var(--ink);
+      font-size: 28px;
+      line-height: 1.18;
+    }
+
+    .id-line {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .status {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .status.submitted { background: #eef7fb; color: var(--blue); border-color: #bde3f2; }
+    .status.under_review { background: var(--warn-bg); color: var(--warn); border-color: #fed7aa; }
+    .status.shortlisted { background: var(--success-bg); color: var(--success); border-color: #bbf7d0; }
+    .status.winner { background: #fffbea; color: #92400e; border-color: #fde68a; }
+    .status.rejected { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+    .status.implemented { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+    .status.archived { background: #f2f4f7; color: #475467; border-color: #d0d5dd; }
+
+    .meta-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 14px;
+      gap: 10px;
+    }
+
+    .meta {
+      background: #f8fbfd;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .meta span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .meta strong {
+      display: block;
+      color: var(--ink);
+      margin-top: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .section {
+      padding: 13px 22px;
+      border-bottom: 1px solid var(--soft-line);
+    }
+
+    .section:last-child { border-bottom: 0; }
+
+    .section h3,
+    .review-panel h3 {
+      color: var(--ink);
+      font-size: 13px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      margin: 0 0 9px;
+    }
+
+    .section p {
+      margin: 0;
+      max-width: 860px;
+      white-space: pre-wrap;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      background: #eef7fb;
+      border: 1px solid #c8e8f4;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .review-panel {
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .review-panel h2 {
+      margin: 0 0 14px;
+      color: var(--ink);
+      font-size: 22px;
+    }
+
+    .control-block {
+      border-top: 1px solid var(--soft-line);
+      padding-top: 18px;
+      margin-top: 18px;
+    }
+
+    .control-block.score-block {
+      margin-top: 26px;
+      padding-top: 22px;
+    }
+
+    .control-block:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 11px;
+      font: inherit;
+      background: #fbfdff;
+    }
+
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .score-grid label {
+      min-height: 34px;
+      line-height: 1.25;
+    }
+
+    .score-bars {
+      display: grid;
+      gap: 8px;
+      margin: 8px 0 16px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 38px;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .score-row strong {
+      color: var(--ink);
+    }
+
+    .score-bar {
+      height: 8px;
+      background: #e6edf2;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .score-bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), #32a852);
+    }
+
+    .comment-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 150px;
+      gap: 10px;
+      align-items: end;
+      margin-top: 10px;
+    }
+
+    .score-total {
+      background: #f7fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .score-total span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .score-total strong {
+      display: block;
+      color: var(--ink);
+      font-size: 28px;
+      margin-top: 2px;
+    }
+
+    .delete-area {
+      border-top-color: #f2c7c3;
+    }
+
+    .delete-area button {
+      width: auto;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .meta-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .button-row,
+      .score-grid,
+      .comment-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .button-row,
+      .score-grid,
+      .comment-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Review Idea</h1>
+      <p class="subtitle">View the full submission, record scores, and set the decision.</p>
+    </div>
+    <a class="secondary" href="admin.html">Back to Admin</a>
+  </header>
+
+  <main>
+    <p class="connection" id="connection">Loading idea...</p>
+    <div class="layout">
+      <section class="submission" id="ideaPanel"></section>
+      <aside class="review-panel" id="controlPanel"></aside>
+    </div>
+  </main>
+
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="loader-box"><span class="spinner"></span><span id="loaderText">Working...</span></div>
+  </div>
+
+  <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="modal">
+      <h2 id="deleteModalTitle">Delete idea?</h2>
+      <p id="deleteModalText">This will permanently remove the selected idea and its related records.</p>
+      <div class="modal-actions">
+        <button class="quiet" type="button" id="cancelDelete">Cancel</button>
+        <button class="danger" type="button" id="confirmDelete">Delete Idea</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://127.0.0.1:7071/api';
+    const params = new URLSearchParams(window.location.search);
+    const ideaId = params.get('id');
+    const statusLabels = {
+      submitted: 'Submitted',
+      under_review: 'Under Review',
+      shortlisted: 'Shortlisted',
+      winner: 'Winner',
+      rejected: 'Rejected',
+      implemented: 'Implemented'
+    };
+    let idea = null;
+    let busyCount = 0;
+
+    function setLoading(isLoading, message = 'Working...') {
+      busyCount += isLoading ? 1 : -1;
+      busyCount = Math.max(0, busyCount);
+      document.getElementById('loaderText').textContent = message;
+      document.getElementById('loaderOverlay').classList.toggle('active', busyCount > 0);
+      document.querySelectorAll('button').forEach(button => {
+        button.disabled = busyCount > 0;
+      });
+    }
+
+    function setDeleteModal(open) {
+      const modal = document.getElementById('deleteModal');
+      modal.classList.toggle('active', open);
+      if (open) {
+        document.getElementById('deleteModalText').textContent = `Delete ${idea.id} - "${idea.title}"? This cannot be undone.`;
+        document.getElementById('cancelDelete').focus();
+      }
+    }
+
+    async function withLoader(message, task) {
+      setLoading(true, message);
+      try {
+        return await task();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      }[character]));
+    }
+
+    function displayDate(value) {
+      return value ? String(value).slice(0, 10) : 'Not recorded';
+    }
+
+    function latestReview(item) {
+      return item.reviews && item.reviews.length ? item.reviews[item.reviews.length - 1] : null;
+    }
+
+    function isIdeaArchived(item) {
+      return Boolean(item.isArchived || item.archived || item.status === 'archived');
+    }
+
+    async function apiJson(path, options = {}) {
+      const headers = {
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+        ...(options.headers || {})
+      };
+      const response = await fetch(`${API_BASE}${path}`, { headers, ...options });
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `Request failed with ${response.status}`);
+      }
+      return response.json();
+    }
+
+    function render() {
+      const review = latestReview(idea);
+      const archived = isIdeaArchived(idea);
+      const scores = review ? review.scores : {};
+      const scoreRows = [
+        ['Innovation', scores.innovation],
+        ['Business impact', scores.businessImpact],
+        ['Practicality', scores.practicality],
+        ['Customer benefit', scores.customerBenefit],
+        ['Strategic alignment', scores.strategicAlignment]
+      ].map(([label, score]) => `
+        <div class="score-row">
+          <strong>${escapeHtml(label)}</strong>
+          <div class="score-bar"><span style="width: ${(score || 0) * 10}%"></span></div>
+          <span>${score || '-'}/10</span>
+        </div>
+      `).join('');
+      document.getElementById('ideaPanel').innerHTML = `
+        <div class="submission-head">
+          <div class="title-row">
+            <div>
+              <span class="status ${escapeHtml(idea.status)}">${escapeHtml(statusLabels[idea.status] || idea.status)}</span>
+              ${archived ? '<span class="status archived">Archived</span>' : ''}
+              <h2>${escapeHtml(idea.title)}</h2>
+              <p class="id-line">${escapeHtml(idea.id)} submitted on ${escapeHtml(displayDate(idea.submittedAt))}</p>
+            </div>
+          </div>
+          <div class="meta-strip">
+            <div class="meta"><span>Submitter</span><strong>${escapeHtml(idea.employeeName)}</strong></div>
+            <div class="meta"><span>Department</span><strong>${escapeHtml(idea.department)}</strong></div>
+            <div class="meta"><span>Theme</span><strong>${escapeHtml(idea.theme)}</strong></div>
+            <div class="meta"><span>Effort</span><strong>${escapeHtml(idea.effort)}</strong></div>
+            <div class="meta"><span>Impact</span><strong>${escapeHtml(idea.impact)}</strong></div>
+            <div class="meta"><span>Score</span><strong>${idea.score ?? '-'}</strong></div>
+          </div>
+        </div>
+        <div class="section">
+          <h3>Problem or Opportunity</h3>
+          <p>${escapeHtml(idea.problem)}</p>
+        </div>
+        <div class="section">
+          <h3>Proposed Idea</h3>
+          <p>${escapeHtml(idea.idea)}</p>
+        </div>
+        <div class="section">
+          <h3>Expected Benefits</h3>
+          <div class="pill-list">${(idea.benefits || []).map(benefit => `<span class="pill">${escapeHtml(benefit)}</span>`).join('') || '<span class="id-line">No benefits selected.</span>'}</div>
+        </div>
+        <div class="section">
+          <h3>Additional Notes</h3>
+          <p>${escapeHtml(idea.notes || 'No additional notes.')}</p>
+        </div>
+      `;
+
+      document.getElementById('controlPanel').innerHTML = `
+        <h2>Review</h2>
+
+        <div class="control-block">
+          <h3>Status</h3>
+          <label for="statusControl">Decision status</label>
+          <select id="statusControl">
+            <option value="submitted">Submitted</option>
+            <option value="under_review">Under Review</option>
+            <option value="shortlisted">Shortlisted</option>
+            <option value="winner">Winner</option>
+            <option value="rejected">Rejected</option>
+            <option value="implemented">Implemented</option>
+          </select>
+          <div class="button-row">
+            <button type="button" id="saveStatus">✓ Save Status</button>
+            <button class="quiet" type="button" data-status-action="shortlisted">★ Shortlist</button>
+            <button class="quiet" type="button" data-status-action="winner">🏆 Winner</button>
+            <button class="quiet" type="button" id="archiveIdea">${archived ? '⌁ Unarchive' : '⌁ Archive'}</button>
+          </div>
+        </div>
+
+        <form id="scoreForm" class="control-block score-block">
+          <h3 style="margin-top :15px;">Score Idea</h3>
+          <div class="score-bars">${scoreRows}</div>
+          <div class="score-grid">
+            <div><label for="innovation">◈ Innovation</label><input id="innovation" name="innovation" type="number" min="1" max="10" value="${scores.innovation || ''}" required /></div>
+            <div><label for="businessImpact">▣ Business<br>Impact</label><input id="businessImpact" name="businessImpact" type="number" min="1" max="10" value="${scores.businessImpact || ''}" required /></div>
+            <div><label for="practicality">⚙ Practicality</label><input id="practicality" name="practicality" type="number" min="1" max="10" value="${scores.practicality || ''}" required /></div>
+            <div><label for="customerBenefit">☉ Customer<br>Benefit</label><input id="customerBenefit" name="customerBenefit" type="number" min="1" max="10" value="${scores.customerBenefit || ''}" required /></div>
+            <div><label for="strategicAlignment">↗ Strategic<br>Alignment</label><input id="strategicAlignment" name="strategicAlignment" type="number" min="1" max="10" value="${scores.strategicAlignment || ''}" required /></div>
+          </div>
+          <div class="comment-row">
+            <div>
+              <label for="comments">Review comments</label>
+              <textarea id="comments" name="comments" placeholder="Add scoring rationale or next steps">${escapeHtml(review ? review.comments || '' : '')}</textarea>
+            </div>
+            <button type="submit">Save Score</button>
+          </div>
+        </form>
+
+        <div class="control-block delete-area">
+          <button class="danger" type="button" id="deleteIdea">Delete Idea</button>
+        </div>
+      `;
+
+      document.getElementById('statusControl').value = idea.status;
+      document.getElementById('saveStatus').addEventListener('click', () => updateStatus(document.getElementById('statusControl').value));
+      document.querySelectorAll('[data-status-action]').forEach(button => {
+        button.addEventListener('click', () => updateStatus(button.dataset.statusAction));
+      });
+      document.getElementById('archiveIdea').addEventListener('click', () => updateArchive(!isIdeaArchived(idea)));
+      document.getElementById('scoreForm').addEventListener('submit', saveScore);
+      document.getElementById('deleteIdea').addEventListener('click', () => setDeleteModal(true));
+    }
+
+    async function loadIdea() {
+      if (!ideaId) {
+        document.getElementById('connection').textContent = 'No idea id was provided.';
+        return;
+      }
+      await withLoader('Loading idea...', async () => {
+        const data = await apiJson(`/GetIdea?id=${encodeURIComponent(ideaId)}`);
+        idea = data.idea;
+        document.getElementById('connection').textContent = `Loaded ${idea.id}.`;
+        render();
+      });
+    }
+
+    async function updateStatus(status) {
+      await withLoader('Saving status...', async () => {
+        await apiJson('/UpdateIdeaStatus', {
+          method: 'POST',
+          body: JSON.stringify({ id: idea.id, status })
+        });
+        await loadIdea();
+      });
+    }
+
+    async function updateArchive(isArchived) {
+      await withLoader(isArchived ? 'Archiving idea...' : 'Restoring idea...', async () => {
+        await apiJson('/UpdateIdeaArchive', {
+          method: 'POST',
+          body: JSON.stringify({ id: idea.id, isArchived })
+        });
+        await loadIdea();
+      });
+    }
+
+    async function saveScore(event) {
+      event.preventDefault();
+      const data = new FormData(event.target);
+      await withLoader('Saving score...', async () => {
+        await apiJson('/AddIdeaReview', {
+          method: 'POST',
+          body: JSON.stringify({
+            id: idea.id,
+            reviewerName: 'Innovation Review Board',
+            scores: {
+              innovation: Number(data.get('innovation')),
+              businessImpact: Number(data.get('businessImpact')),
+              practicality: Number(data.get('practicality')),
+              customerBenefit: Number(data.get('customerBenefit')),
+              strategicAlignment: Number(data.get('strategicAlignment'))
+            },
+            comments: data.get('comments') || ''
+          })
+        });
+        await loadIdea();
+      });
+    }
+
+    async function deleteIdea() {
+      setDeleteModal(false);
+      await withLoader('Deleting idea...', async () => {
+        await apiJson('/DeleteIdea', {
+          method: 'POST',
+          body: JSON.stringify({ id: idea.id })
+        });
+        window.location.href = 'admin.html';
+      });
+    }
+
+    loadIdea().catch(error => {
+      document.getElementById('connection').textContent = `Could not load idea. ${error.message}`;
+    });
+
+    document.getElementById('cancelDelete').addEventListener('click', () => setDeleteModal(false));
+    document.getElementById('confirmDelete').addEventListener('click', deleteIdea);
+    document.getElementById('deleteModal').addEventListener('click', event => {
+      if (event.target.id === 'deleteModal') {
+        setDeleteModal(false);
+      }
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        setDeleteModal(false);
+      }
+    });
+  </script>
+</body>
+</html>
