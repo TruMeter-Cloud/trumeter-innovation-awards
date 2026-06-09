@@ -499,7 +499,8 @@
   </div>
 
   <script>
-    const API_BASE = 'http://127.0.0.1:7071/api';
+    const API_BASE = 'https://tm-awards-api.azurewebsites.net/api';
+    const FUNCTIONS_KEY = 'keyfortestingdonotuseinprod090626';
     const statusLabels = {
       submitted: 'Submitted',
       under_review: 'Under Review',
@@ -553,12 +554,39 @@
     }
 
     async function apiJson(path) {
-      const response = await fetch(`${API_BASE}${path}`);
+      const headers = {
+        ...(FUNCTIONS_KEY ? { 'x-functions-key': FUNCTIONS_KEY } : {})
+      };
+      const response = await fetch(`${API_BASE}${path}`, { headers });
       if (!response.ok) {
         const message = await response.text();
         throw new Error(message || `Request failed with ${response.status}`);
       }
       return response.json();
+    }
+
+    async function downloadCsv() {
+      await withLoader('Preparing CSV export...', async () => {
+        const headers = {
+          ...(FUNCTIONS_KEY ? { 'x-functions-key': FUNCTIONS_KEY } : {})
+        };
+        const response = await fetch(`${API_BASE}/ExportIdeasCsv`, { headers });
+
+        if (!response.ok) {
+          const message = await response.text();
+          throw new Error(message || `Request failed with ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'innovation-ideas.csv';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      });
     }
 
     function renderStats(ideas) {
@@ -709,9 +737,9 @@
       renderRows();
     });
     document.getElementById('exportIdeas').addEventListener('click', () => {
-      setLoading(true, 'Preparing CSV export...');
-      window.location.href = `${API_BASE}/ExportIdeasCsv`;
-      setTimeout(() => setLoading(false), 1200);
+      downloadCsv().catch(error => {
+        document.getElementById('adminConnection').textContent = `CSV export failed. ${error.message}`;
+      });
     });
     document.getElementById('refreshIdeas').addEventListener('click', loadIdeas);
     document.getElementById('prevPage').addEventListener('click', () => {
