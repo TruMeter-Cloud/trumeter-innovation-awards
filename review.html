@@ -391,6 +391,41 @@
       line-height: 1.25;
     }
 
+    .readiness-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0 0 14px;
+    }
+
+    .readiness-card {
+      background: #f8fbfd;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px;
+    }
+
+    .readiness-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .readiness-card strong {
+      display: block;
+      color: var(--ink);
+      font-size: 24px;
+      line-height: 1.1;
+      margin: 4px 0;
+    }
+
+    .readiness-card small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
     .score-bars {
       display: grid;
       gap: 8px;
@@ -471,6 +506,7 @@
 
       .button-row,
       .score-grid,
+      .readiness-grid,
       .comment-row {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -479,6 +515,7 @@
     @media (max-width: 560px) {
       .button-row,
       .score-grid,
+      .readiness-grid,
       .comment-row {
         grid-template-columns: 1fr;
       }
@@ -583,6 +620,13 @@
       return Boolean(item.isArchived || item.archived || item.status === 'archived');
     }
 
+    function optionList(values, selectedValue, labelPrefix = '') {
+      return values.map(value => {
+        const selected = String(value) === String(selectedValue) ? ' selected' : '';
+        return `<option value="${escapeHtml(value)}"${selected}>${escapeHtml(labelPrefix)}${escapeHtml(value)}</option>`;
+      }).join('');
+    }
+
     async function apiJson(path, options = {}) {
       const headers = {
         ...(FUNCTIONS_KEY ? { 'x-functions-key': FUNCTIONS_KEY } : {}),
@@ -600,7 +644,11 @@
     function render() {
       const review = latestReview(idea);
       const archived = isIdeaArchived(idea);
-      const scores = review ? review.scores : {};
+      const scores = (review && review.scores) || {};
+      const trl = review?.trl ?? idea.trl ?? '';
+      const prl = review?.prl ?? idea.prl ?? '';
+      const trlOptions = optionList([1, 2, 3, 4, 5, 6, 7, 8, 9], trl, 'TRL ');
+      const prlOptions = optionList(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'], prl, 'PRL ');
       const scoreRows = [
         ['Innovation', scores.innovation],
         ['Business impact', scores.businessImpact],
@@ -675,6 +723,18 @@
 
         <form id="scoreForm" class="control-block score-block">
           <h3 style="margin-top :15px;">Score Idea</h3>
+          <div class="readiness-grid">
+            <div class="readiness-card">
+              <span>TRL</span>
+              <strong>${trl || '-'}</strong>
+              <small>Technology readiness level</small>
+            </div>
+            <div class="readiness-card">
+              <span>PRL</span>
+              <strong>${prl || '-'}</strong>
+              <small>Product readiness level</small>
+            </div>
+          </div>
           <div class="score-bars">${scoreRows}</div>
           <div class="score-grid">
             <div><label for="innovation">◈ Innovation</label><input id="innovation" name="innovation" type="number" min="1" max="10" value="${scores.innovation || ''}" required /></div>
@@ -682,6 +742,22 @@
             <div><label for="practicality">⚙ Practicality</label><input id="practicality" name="practicality" type="number" min="1" max="10" value="${scores.practicality || ''}" required /></div>
             <div><label for="customerBenefit">☉ Customer<br>Benefit</label><input id="customerBenefit" name="customerBenefit" type="number" min="1" max="10" value="${scores.customerBenefit || ''}" required /></div>
             <div><label for="strategicAlignment">↗ Strategic<br>Alignment</label><input id="strategicAlignment" name="strategicAlignment" type="number" min="1" max="10" value="${scores.strategicAlignment || ''}" required /></div>
+          </div>
+          <div class="readiness-grid" style="margin-top: 10px;">
+            <div>
+              <label for="trl">TRL - Technology readiness level</label>
+              <select id="trl" name="trl" required>
+                <option value="">Select TRL</option>
+                ${trlOptions}
+              </select>
+            </div>
+            <div>
+              <label for="prl">PRL - Product readiness level</label>
+              <select id="prl" name="prl" required>
+                <option value="">Select PRL</option>
+                ${prlOptions}
+              </select>
+            </div>
           </div>
           <div class="comment-row">
             <div>
@@ -743,24 +819,47 @@
     async function saveScore(event) {
       event.preventDefault();
       const data = new FormData(event.target);
-      await withLoader('Saving score...', async () => {
-        await apiJson('/AddIdeaReview', {
-          method: 'POST',
-          body: JSON.stringify({
-            id: idea.id,
-            reviewerName: 'Innovation Review Board',
-            scores: {
-              innovation: Number(data.get('innovation')),
-              businessImpact: Number(data.get('businessImpact')),
-              practicality: Number(data.get('practicality')),
-              customerBenefit: Number(data.get('customerBenefit')),
-              strategicAlignment: Number(data.get('strategicAlignment'))
-            },
-            comments: data.get('comments') || ''
-          })
+      const payload = {
+        id: idea.id,
+        reviewerName: 'Innovation Review Board',
+        scores: {
+          innovation: Number(data.get('innovation')),
+          businessImpact: Number(data.get('businessImpact')),
+          practicality: Number(data.get('practicality')),
+          customerBenefit: Number(data.get('customerBenefit')),
+          strategicAlignment: Number(data.get('strategicAlignment'))
+        },
+        trl: Number(data.get('trl')),
+        prl: data.get('prl'),
+        comments: data.get('comments') || ''
+      };
+
+      try {
+        await withLoader('Saving score...', async () => {
+          const result = await apiJson('/AddIdeaReview', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+
+          if (result.idea) {
+            idea = result.idea;
+            const review = latestReview(idea);
+
+            if (review) {
+              review.trl = review.trl ?? payload.trl;
+              review.prl = review.prl ?? payload.prl;
+            }
+
+            document.getElementById('connection').textContent = `Saved review for ${idea.id}.`;
+            render();
+            return;
+          }
+
+          await loadIdea();
         });
-        await loadIdea();
-      });
+      } catch (error) {
+        document.getElementById('connection').textContent = `Score could not be saved. ${error.message}`;
+      }
     }
 
     async function deleteIdea() {
