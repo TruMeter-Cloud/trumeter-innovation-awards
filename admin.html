@@ -38,6 +38,20 @@
       flex-wrap: wrap;
     }
 
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .header-logo {
+      width: 54px;
+      height: 54px;
+      flex: 0 0 54px;
+      object-fit: contain;
+    }
+
     h1 {
       margin: 0;
       font-size: clamp(26px, 4vw, 40px);
@@ -47,6 +61,18 @@
     .subtitle {
       margin: 7px 0 0;
       color: #d9eef8;
+    }
+
+    @media (max-width: 600px) {
+      .header-brand {
+        gap: 12px;
+      }
+
+      .header-logo {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+      }
     }
 
     main {
@@ -230,6 +256,10 @@
       flex-wrap: wrap;
     }
 
+    .pagination[hidden] {
+      display: none;
+    }
+
     .pagination-controls {
       display: flex;
       gap: 8px;
@@ -305,6 +335,10 @@
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.3px;
+      padding-left: 10px;
+      padding-right: 10px;
+      white-space: nowrap;
+      overflow-wrap: normal;
     }
 
     tbody tr {
@@ -437,9 +471,12 @@
 </head>
 <body>
   <header>
-    <div>
-      <h1>Admin Review Dashboard</h1>
-      <p class="subtitle">Browse submissions, hover for a quick preview, click to review and score.</p>
+    <div class="header-brand">
+      <img class="header-logo" src="assets/swirl-transparent.png" alt="Trumeter logo">
+      <div>
+        <h1>Admin Review Dashboard</h1>
+        <p class="subtitle">Browse submissions, hover for a quick preview, click to review and score.</p>
+      </div>
     </div>
     <div class="top-actions">
       <a class="secondary" href="index.html">Back to Site</a>
@@ -506,7 +543,7 @@
           <tbody id="ideaRows"></tbody>
         </table>
       </div>
-      <div class="pagination">
+      <div class="pagination" id="pagination" hidden>
         <span class="note" id="paginationSummary">Showing 0 ideas</span>
         <div class="pagination-controls">
           <button class="secondary" type="button" id="prevPage">Previous</button>
@@ -688,6 +725,7 @@
       `).join('') || '<tr><td colspan="10">No matching ideas found.</td></tr>';
 
       const end = ideas.length ? Math.min(start + pageSize, ideas.length) : 0;
+      document.getElementById('pagination').hidden = ideas.length <= pageSize;
       document.getElementById('paginationSummary').textContent = ideas.length
         ? `Showing ${start + 1}-${end} of ${ideas.length} ideas`
         : 'Showing 0 ideas';

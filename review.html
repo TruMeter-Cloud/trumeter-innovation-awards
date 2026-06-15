@@ -43,6 +43,20 @@
       flex-wrap: wrap;
     }
 
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .header-logo {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      object-fit: contain;
+    }
+
     h1 {
       margin: 0;
       font-size: 28px;
@@ -53,6 +67,14 @@
       margin: 4px 0 0;
       color: #cfe2ef;
       font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .header-logo {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+      }
     }
 
     main {
@@ -694,9 +716,12 @@
 </head>
 <body>
   <header>
-    <div>
-      <h1>Review Idea</h1>
-      <p class="subtitle">View the full submission, record scores, and set the decision.</p>
+    <div class="header-brand">
+      <img class="header-logo" src="assets/swirl-transparent.png" alt="Trumeter logo">
+      <div>
+        <h1>Review Idea</h1>
+        <p class="subtitle">View the full submission, record scores, and set the decision.</p>
+      </div>
     </div>
     <a class="secondary" href="admin.html">Back to Admin</a>
   </header>

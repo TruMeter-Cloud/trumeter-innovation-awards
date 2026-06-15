@@ -59,11 +59,36 @@
       margin-bottom: 18px;
     }
 
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .header-logo {
+      width: 76px;
+      height: 76px;
+      flex: 0 0 76px;
+      object-fit: contain;
+    }
+
     h1 {
       margin: 0;
       font-size: clamp(36px, 6vw, 70px);
       line-height: 1.05;
       max-width: 900px;
+    }
+
+    @media (max-width: 600px) {
+      .header-title {
+        gap: 14px;
+      }
+
+      .header-logo {
+        width: 56px;
+        height: 56px;
+        flex-basis: 56px;
+      }
     }
 
     .subtitle {
@@ -649,7 +674,10 @@
 <body>
   <header>
     <div class="badge">Innovate @ Trumeter</div>
-    <h1>Trumeter Innovation Awards</h1>
+    <div class="header-title">
+      <img class="header-logo" src="assets/swirl-transparent.png" alt="Trumeter logo">
+      <h1>Trumeter Innovation Awards</h1>
+    </div>
     <p class="subtitle">A simple, company-wide framework for employees to share ideas, solve real problems, and win small prizes while helping shape the future of Trumeter.</p>
   </header>
 
