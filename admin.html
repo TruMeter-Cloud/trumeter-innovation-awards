@@ -356,6 +356,27 @@
       font-weight: 900;
     }
 
+    .readiness-value {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 34px;
+      min-height: 28px;
+      padding: 4px 7px;
+      border: 1px solid #cfe0ea;
+      border-radius: 7px;
+      background: #f4f9fc;
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .readiness-value.empty {
+      color: var(--muted);
+      background: #fafbfc;
+    }
+
     .hover-card {
       position: fixed;
       left: 0;
@@ -470,14 +491,16 @@
         <table>
           <thead>
             <tr>
-              <th style="width: 26%;">Idea</th>
-              <th style="width: 12%;">Department</th>
-              <th style="width: 16%;">Theme</th>
-              <th style="width: 12%;">Status</th>
-              <th style="width: 9%;">Archived</th>
-              <th style="width: 7%;">Score</th>
-              <th style="width: 10%;">Owner</th>
-              <th style="width: 8%;">Submitted</th>
+              <th style="width: 22%;">Idea</th>
+              <th style="width: 10%;">Department</th>
+              <th style="width: 13%;">Theme</th>
+              <th style="width: 11%;">Status</th>
+              <th style="width: 7%;">Archived</th>
+              <th style="width: 5%;">TRL</th>
+              <th style="width: 5%;">PRL</th>
+              <th style="width: 6%;">Score</th>
+              <th style="width: 11%;">Owner</th>
+              <th style="width: 10%;">Submitted</th>
             </tr>
           </thead>
           <tbody id="ideaRows"></tbody>
@@ -656,11 +679,13 @@
           <td>${escapeHtml(idea.theme)}</td>
           <td><span class="status ${escapeHtml(idea.status)}">${escapeHtml(statusLabels[idea.status] || idea.status)}</span></td>
           <td>${isIdeaArchived(idea) ? '<span class="status archived">Yes</span>' : 'No'}</td>
+          <td><span class="readiness-value ${idea.trl == null ? 'empty' : ''}">${idea.trl ?? '-'}</span></td>
+          <td><span class="readiness-value ${idea.prl ? '' : 'empty'}">${escapeHtml(idea.prl || '-')}</span></td>
           <td class="score">${idea.score ?? '-'}</td>
           <td>${escapeHtml(idea.employeeName)}</td>
           <td>${escapeHtml(displayDate(idea.submittedAt))}</td>
         </tr>
-      `).join('') || '<tr><td colspan="8">No matching ideas found.</td></tr>';
+      `).join('') || '<tr><td colspan="10">No matching ideas found.</td></tr>';
 
       const end = ideas.length ? Math.min(start + pageSize, ideas.length) : 0;
       document.getElementById('paginationSummary').textContent = ideas.length
