@@ -380,6 +380,53 @@
       margin-top: 10px;
     }
 
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .decision-button {
+      background: #f7fafc;
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .decision-button.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+      box-shadow: 0 5px 14px rgba(15, 111, 181, 0.22);
+    }
+
+    .archive-control {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--soft-line);
+    }
+
+    .archive-control p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .archive-button.active {
+      background: #475467;
+      border-color: #475467;
+      color: #fff;
+    }
+
+    .readiness-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
     .score-grid {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -505,6 +552,7 @@
       }
 
       .button-row,
+      .decision-grid,
       .score-grid,
       .readiness-grid,
       .comment-row {
@@ -514,6 +562,7 @@
 
     @media (max-width: 560px) {
       .button-row,
+      .decision-grid,
       .score-grid,
       .readiness-grid,
       .comment-row {
@@ -703,38 +752,60 @@
         <h2>Review</h2>
 
         <div class="control-block">
-          <h3>Status</h3>
-          <label for="statusControl">Decision status</label>
-          <select id="statusControl">
-            <option value="submitted">Submitted</option>
-            <option value="under_review">Under Review</option>
-            <option value="shortlisted">Shortlisted</option>
-            <option value="winner">Winner</option>
-            <option value="rejected">Rejected</option>
-            <option value="implemented">Implemented</option>
-          </select>
-          <div class="button-row">
-            <button type="button" id="saveStatus">✓ Save Status</button>
-            <button class="quiet" type="button" data-status-action="shortlisted">★ Shortlist</button>
-            <button class="quiet" type="button" data-status-action="winner">🏆 Winner</button>
-            <button class="quiet" type="button" id="archiveIdea">${archived ? '⌁ Unarchive' : '⌁ Archive'}</button>
+          <h3>Decision Status</h3>
+          <div class="decision-grid">
+            <button class="decision-button ${idea.status === 'submitted' ? 'active' : ''}" type="button" data-status-action="submitted">Submitted</button>
+            <button class="decision-button ${idea.status === 'under_review' ? 'active' : ''}" type="button" data-status-action="under_review">Under Review</button>
+            <button class="decision-button ${idea.status === 'shortlisted' ? 'active' : ''}" type="button" data-status-action="shortlisted">★ Shortlisted</button>
+            <button class="decision-button ${idea.status === 'winner' ? 'active' : ''}" type="button" data-status-action="winner">🏆 Winner</button>
+            <button class="decision-button ${idea.status === 'rejected' ? 'active' : ''}" type="button" data-status-action="rejected">Rejected</button>
+            <button class="decision-button ${idea.status === 'implemented' ? 'active' : ''}" type="button" data-status-action="implemented">✓ Implemented</button>
+          </div>
+          <div class="archive-control">
+            <p>Archived ideas are moved to History without changing their decision status.</p>
+            <button class="decision-button archive-button ${archived ? 'active' : ''}" type="button" id="archiveIdea">${archived ? 'Archived' : 'Archive'}</button>
           </div>
         </div>
 
+        <div class="control-block score-block">
+          <h3>Readiness</h3>
+          <form id="readinessForm">
+            <div class="readiness-grid">
+              <div class="readiness-card">
+                <span>TRL</span>
+                <strong>${trl || '-'}</strong>
+                <small>Technology readiness level</small>
+              </div>
+              <div class="readiness-card">
+                <span>PRL</span>
+                <strong>${prl || '-'}</strong>
+                <small>Product readiness level</small>
+              </div>
+            </div>
+            <div class="readiness-grid">
+              <div>
+                <label for="trl">TRL - Technology readiness level</label>
+                <select id="trl" name="trl" required>
+                  <option value="">Select TRL</option>
+                  ${trlOptions}
+                </select>
+              </div>
+              <div>
+                <label for="prl">PRL - Product readiness level</label>
+                <select id="prl" name="prl" required>
+                  <option value="">Select PRL</option>
+                  ${prlOptions}
+                </select>
+              </div>
+            </div>
+            <div class="readiness-form-actions">
+              <button type="submit">Save Readiness</button>
+            </div>
+          </form>
+        </div>
+
         <form id="scoreForm" class="control-block score-block">
-          <h3 style="margin-top :15px;">Score Idea</h3>
-          <div class="readiness-grid">
-            <div class="readiness-card">
-              <span>TRL</span>
-              <strong>${trl || '-'}</strong>
-              <small>Technology readiness level</small>
-            </div>
-            <div class="readiness-card">
-              <span>PRL</span>
-              <strong>${prl || '-'}</strong>
-              <small>Product readiness level</small>
-            </div>
-          </div>
+          <h3>Score Idea</h3>
           <div class="score-bars">${scoreRows}</div>
           <div class="score-grid">
             <div><label for="innovation">◈ Innovation</label><input id="innovation" name="innovation" type="number" min="1" max="10" value="${scores.innovation || ''}" required /></div>
@@ -742,22 +813,6 @@
             <div><label for="practicality">⚙ Practicality</label><input id="practicality" name="practicality" type="number" min="1" max="10" value="${scores.practicality || ''}" required /></div>
             <div><label for="customerBenefit">☉ Customer<br>Benefit</label><input id="customerBenefit" name="customerBenefit" type="number" min="1" max="10" value="${scores.customerBenefit || ''}" required /></div>
             <div><label for="strategicAlignment">↗ Strategic<br>Alignment</label><input id="strategicAlignment" name="strategicAlignment" type="number" min="1" max="10" value="${scores.strategicAlignment || ''}" required /></div>
-          </div>
-          <div class="readiness-grid" style="margin-top: 10px;">
-            <div>
-              <label for="trl">TRL - Technology readiness level</label>
-              <select id="trl" name="trl" required>
-                <option value="">Select TRL</option>
-                ${trlOptions}
-              </select>
-            </div>
-            <div>
-              <label for="prl">PRL - Product readiness level</label>
-              <select id="prl" name="prl" required>
-                <option value="">Select PRL</option>
-                ${prlOptions}
-              </select>
-            </div>
           </div>
           <div class="comment-row">
             <div>
@@ -773,12 +828,11 @@
         </div>
       `;
 
-      document.getElementById('statusControl').value = idea.status;
-      document.getElementById('saveStatus').addEventListener('click', () => updateStatus(document.getElementById('statusControl').value));
       document.querySelectorAll('[data-status-action]').forEach(button => {
         button.addEventListener('click', () => updateStatus(button.dataset.statusAction));
       });
       document.getElementById('archiveIdea').addEventListener('click', () => updateArchive(!isIdeaArchived(idea)));
+      document.getElementById('readinessForm').addEventListener('submit', saveReadiness);
       document.getElementById('scoreForm').addEventListener('submit', saveScore);
       document.getElementById('deleteIdea').addEventListener('click', () => setDeleteModal(true));
     }
@@ -797,23 +851,59 @@
     }
 
     async function updateStatus(status) {
-      await withLoader('Saving status...', async () => {
-        await apiJson('/UpdateIdeaStatus', {
-          method: 'POST',
-          body: JSON.stringify({ id: idea.id, status })
+      try {
+        await withLoader('Saving status...', async () => {
+          const result = await apiJson('/UpdateIdeaStatus', {
+            method: 'POST',
+            body: JSON.stringify({ id: idea.id, status })
+          });
+          idea = result.idea;
+          document.getElementById('connection').textContent = `Status changed to ${statusLabels[idea.status] || idea.status}.`;
+          render();
         });
-        await loadIdea();
-      });
+      } catch (error) {
+        document.getElementById('connection').textContent = `Status could not be changed. ${error.message}`;
+      }
     }
 
     async function updateArchive(isArchived) {
-      await withLoader(isArchived ? 'Archiving idea...' : 'Restoring idea...', async () => {
-        await apiJson('/UpdateIdeaArchive', {
-          method: 'POST',
-          body: JSON.stringify({ id: idea.id, isArchived })
+      try {
+        await withLoader(isArchived ? 'Archiving idea...' : 'Restoring idea...', async () => {
+          const result = await apiJson('/UpdateIdeaArchive', {
+            method: 'POST',
+            body: JSON.stringify({ id: idea.id, isArchived })
+          });
+          idea = result.idea;
+          document.getElementById('connection').textContent = isArchived ? 'Idea archived.' : 'Idea restored to Active Ideas.';
+          render();
         });
-        await loadIdea();
-      });
+      } catch (error) {
+        document.getElementById('connection').textContent = `Archive state could not be changed. ${error.message}`;
+      }
+    }
+
+    async function saveReadiness(event) {
+      event.preventDefault();
+      const data = new FormData(event.target);
+      const payload = {
+        id: idea.id,
+        trl: Number(data.get('trl')),
+        prl: data.get('prl')
+      };
+
+      try {
+        await withLoader('Saving readiness...', async () => {
+          const result = await apiJson('/UpdateIdeaReadiness', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+          idea = result.idea;
+          document.getElementById('connection').textContent = `Saved TRL ${idea.trl} and PRL ${idea.prl}.`;
+          render();
+        });
+      } catch (error) {
+        document.getElementById('connection').textContent = `Readiness could not be saved. ${error.message}`;
+      }
     }
 
     async function saveScore(event) {
@@ -829,8 +919,6 @@
           customerBenefit: Number(data.get('customerBenefit')),
           strategicAlignment: Number(data.get('strategicAlignment'))
         },
-        trl: Number(data.get('trl')),
-        prl: data.get('prl'),
         comments: data.get('comments') || ''
       };
 
@@ -843,13 +931,6 @@
 
           if (result.idea) {
             idea = result.idea;
-            const review = latestReview(idea);
-
-            if (review) {
-              review.trl = review.trl ?? payload.trl;
-              review.prl = review.prl ?? payload.prl;
-            }
-
             document.getElementById('connection').textContent = `Saved review for ${idea.id}.`;
             render();
             return;
